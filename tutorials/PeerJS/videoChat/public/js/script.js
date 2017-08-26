@@ -5,25 +5,31 @@ var peer_id, name, conn;
 var messages_template = Handlebars.compile($('#messages-template').html());
 
 var peer = new Peer({
-	host: 'localhost';
+	host: 'localhost',
 	port: 9000,
 	path: '/peerjs',
-	debug 3,
-	config: {'iceServers:'[
+	debug: 3,
+	config: {'iceServers:':[
 	{url: 'stun:stun1.l.google.com:19302'},
 	{url: 'turn:numb.viagenie.ca',
 		credential:'muazkh', username: 'webrtc@live.com'}
 	]}
 });
 
+
+
 peer.on('open', function(){
 	$('#id').text(peer.id);
 });
 
 
+
+
 navigator.getUserMedia = navigator.getUserMedia ||
 			navigator.webkitGetUserMedia ||
 			navigator.mozGetUserMedia;
+
+
 
 function getVideo(callback){
 	navigator.getUserMedia(
@@ -36,16 +42,22 @@ function getVideo(callback){
 	);
 }
 
+
+
 getVideo(function(stream){
 	window.localStream = stream;
 	onReceieveStream(stream, 'my-camera');
 });
+
+
 
 function onReceiveStream(stream, element_id){
 	var video = $('#' + element_id + ' video')[0];
 	video.src = window.URL.createObjectURL(stream);
 	window.peer_stream = stream;
 }
+
+
 
 $('#login').click(function(){
 	name = $('#name').val();
@@ -60,6 +72,8 @@ $('#login').click(function(){
 	$('#connect').addClass('hidden');
 });
 
+
+
 peer.on('connection', function(connection){
 	conn = connection;
 	peer_id = connection.peer;
@@ -69,6 +83,8 @@ peer.on('connection', function(connection){
 	$('#connected_peer_container').removeClass('hidden');
 	$('#connected_peer').text(connection.metadata.username);
 });
+
+
 
 
 function handleMessage(data){
@@ -86,6 +102,8 @@ function handleMessage(data){
 
 }
 
+
+
 function sendMessage(){
 	var text = $('#message').val();
 	var data = {'from':name, 'text':text};
@@ -94,6 +112,8 @@ function sendMessage(){
 	handleMessage(data);
 	$('#message').val('');
 }
+
+
 
 $('#call').click(function(){
 	var call = peer.call(peer_id, window.localStream);
@@ -106,6 +126,8 @@ $('#call').click(function(){
 peer.on('call', function(call){
 	onReceiveCall(call);
 });
+
+
 
 function onReceiveCall(call){
 	call.answer(window.localStream);
